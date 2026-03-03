@@ -552,6 +552,104 @@ export const SCENARIOS = [
                 routeEff: 1
             }
         ]
+    },
+
+    // ─────── LOGISTICAL FAILURES ────────────────────────────────
+    {
+        id: 'sc_suez_blockage',
+        category: 'LOGISTICS',
+        icon: '🚢',
+        title: 'Mega-Ship Grounds in Suez Canal, Blocking Global Trade',
+        situation: 'A 400-meter container ship has completely wedged itself diagonally across the Suez Canal during a sandstorm. Hundreds of vessels are backed up. $9.6 billion worth of daily trade is halted.',
+        realWorldContext: 'The 2021 Ever Given grounding blocked the canal for 6 days. It trapped 1.9 million barrels of oil a day, delaying supply chains globally. Companies faced agonizing choices: wait and hope it\'s freed soon, or send ships around Africa at massive expense.',
+        defconDelta: 0,
+        choices: [
+            {
+                id: 'reroute_cape_immediately',
+                label: '🌍 Reroute immediately around Africa',
+                description: 'Take the hit on fuel and time. Don\'t wait for salvage.',
+                realLogic: 'Some companies rerouted within 24 hours. They accepted a 14-day delay and high fuel costs rather than gambling on the salvage timeline. When the ship was freed earlier than expected (6 days), these companies looked foolish, but it was the safer risk-management choice.',
+                cost: 4000,
+                effects: { capital: -2000, oil: -400, defcon: 0 },
+                consequence: 'Suez routes disrupted, but African detours keep trade flowing at 75% efficiency. You absorb -$2000 and high fuel costs. Your supply chain remains unbroken.',
+                priceMods: { oil: 1.05 },
+                affectsRoutes: ['r7', 'r8'],
+                routeEff: 0.75
+            },
+            {
+                id: 'wait_for_salvage',
+                label: '⏳ Anchor and wait for salvage teams',
+                description: 'Hold position. The Dutch salvage teams are the best in the world.',
+                realLogic: 'Most operators anchored and waited. The gamble paid off when the Ever Given was floated in 6 days. Had it taken weeks (as some feared), the cascading delays would have bankrupted smaller shipping lines.',
+                cost: 1000,
+                effects: { capital: -4000, oil: 0, defcon: 0 },
+                consequence: 'Routes are completely blocked for 1 turn. You suffer -$4,000 in delayed revenue. However, you avoid massive fuel overages. Once cleared, efficiency returns immediately.',
+                priceMods: { copper: 1.05, lithium: 1.05 },
+                affectsRoutes: ['r7', 'r8'],
+                routeEff: 0
+            },
+            {
+                id: 'air_freight_pivot',
+                label: '✈️ Charter emergency air freight for critical goods',
+                description: 'Abandon the sea. Move high-margin goods by air.',
+                realLogic: 'During the blockage, rates for air cargo from Asia to Europe spiked as companies moved laptops, medical supplies, and critical components. Extremely expensive, but preserves key client relationships.',
+                cost: 8000,
+                effects: { capital: +3000, influence: +200, defcon: 0 },
+                consequence: 'You pay a massive premium to secure air transport. You gain +$3,000 from fulfilling critical contracts that rivals missed. Your influence grows. Sea routes remain blocked.',
+                priceMods: { lithium: 1.08, copper: 1.04 },
+                affectsRoutes: ['r7', 'r8'],
+                routeEff: 0
+            }
+        ]
+    },
+
+    // ─────── GLOBAL HEALTH ──────────────────────────────────────
+    {
+        id: 'sc_global_pandemic',
+        category: 'CRITICAL',
+        icon: '🦠',
+        title: 'Novel Pathogen Triggers Global Lockdowns',
+        situation: 'A highly contagious respiratory virus is spreading rapidly. Major economies are ordering sudden, indefinite lockdowns. Port workers, truck drivers, and manufacturing hubs are paralyzed. Demand for consumer goods is fluctuating violently.',
+        realWorldContext: 'The 2020 COVID-19 pandemic caused a dual supply-and-demand shock. Oil futures literally went negative temporarily as storage filled up. Meanwhile, demand for electronics and medical supplies skyrocketed, creating severe shortages.',
+        defconDelta: 0,
+        choices: [
+            {
+                id: 'hoard_cash',
+                label: '💰 Liquidate positions and hoard cash',
+                description: 'Prepare for a prolonged recession. Cash is king.',
+                realLogic: 'In Q1 2020, corporations drew down credit lines and hoarded billions in cash to ensure survival during the great unknown. Companies that survived the initial shock were then positioned to buy distressed assets.',
+                cost: 0,
+                effects: { capital: +8000, influence: -300, defcon: 0 },
+                consequence: 'You slash operations and hoard cash. Gain +$8,000 liquidity immediately. However, your route efficiencies drop to 40% as you lay off workforce. You lose influence for abandoning contracts.',
+                priceMods: { oil: 0.6, copper: 0.8, gold: 1.15 },
+                affectsRoutes: ['r1', 'r2', 'r3', 'r4', 'r5', 'r13', 'r14', 'r15', 'r16'],
+                routeEff: 0.4
+            },
+            {
+                id: 'pivot_medical_logistics',
+                label: '⚕️ Pivot entire fleet to medical & essential logistics',
+                description: 'Repurpose trade routes to handle the crisis. Gain government favors.',
+                realLogic: 'Logistics companies that successfully pivoted to transporting PPE, vaccines, and essential consumer goods saw record profits in 2020/2021, supported by emergency government contracts.',
+                cost: 7000,
+                effects: { capital: +6000, influence: +800, defcon: -1 },
+                consequence: 'You spend heavily to refit your logistics network. You secure lucrative emergency contracts (+$6,000). Huge influence gain as a global savior. DEFCON drops by 1 as nations collaborate.',
+                priceMods: { wheat: 1.2, lithium: 1.1 },
+                affectsRoutes: [],
+                routeEff: 1
+            },
+            {
+                id: 'buy_oil_storage',
+                label: '🛢️ Buy desperate oil contracts at negative prices',
+                description: 'Take delivery of oil when no one has storage. Profit later.',
+                realLogic: 'In April 2020, WTI crude futures famously dropped to -$37 a barrel. Traders literally paid buyers to take oil because storage facilities in Cushing, Oklahoma were full. Anyone with empty supertankers made unprecedented profits storing it.',
+                cost: 4000,
+                effects: { capital: +12000, oil: +4000, defcon: 0 },
+                consequence: 'You lease empty supertankers for floating storage, absorbing oil at rock-bottom prices. You gain massive oil reserves (+4000) and later arbitrage it for +$12,000. Masterful crisis profiteering.',
+                priceMods: { oil: 0.5 },
+                affectsRoutes: [],
+                routeEff: 0.6
+            }
+        ]
     }
 ];
 

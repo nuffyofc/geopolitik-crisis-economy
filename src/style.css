@@ -1550,3 +1550,85 @@ body,
     transform: translateX(5px)
   }
 }
+
+/* ── RESPONSIVE / MOBILE ─────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  :root {
+    --panel-left-w: 220px;
+    --panel-right-w: 260px;
+  }
+}
+
+@media (max-width: 768px) {
+  #game-screen {
+    grid-template-rows: auto 1fr auto;
+  }
+
+  .top-bar {
+    height: auto;
+    flex-wrap: wrap;
+    padding: 10px;
+    gap: 8px;
+    justify-content: space-between;
+  }
+
+  .top-bar-center {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+    overflow-x: auto;
+    padding-bottom: 5px;
+  }
+
+  .top-bar-left,
+  .top-bar-right {
+    min-width: unset;
+  }
+
+  .game-layout {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .map-container {
+    min-height: 45vh;
+    flex: 0 0 auto;
+  }
+
+  .panel {
+    flex: 0 0 auto;
+    max-height: unset;
+    border: none;
+    border-bottom: 1px solid var(--border-cyan);
+  }
+
+  .faction-grid {
+    grid-template-columns: 1fr;
+    max-height: 45vh;
+    overflow-y: auto;
+  }
+
+  .logo-title {
+    font-size: clamp(32px, 8vw, 48px);
+  }
+
+  .btn-start {
+    padding: 12px 24px;
+    font-size: 11px;
+  }
+
+  .consequence-panel {
+    padding: 15px;
+    width: 95%;
+  }
+
+  .status-bar {
+    height: auto;
+    flex-wrap: wrap;
+    padding: 8px 14px;
+    gap: 8px;
+    justify-content: center;
+  }
+}

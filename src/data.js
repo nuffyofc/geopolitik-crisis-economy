@@ -86,51 +86,51 @@ export const FACTIONS = [
 // World map nodes (x/y as percentages of canvas)
 export const WORLD_NODES = [
   // North America
-  { id: 'nyc', name: 'New York', type: 'economic', lon: -74.0, lat: 40.7, region: 'NA', gdp: 250 },
-  { id: 'la', name: 'Los Angeles', type: 'economic', lon: -118.2, lat: 34.0, region: 'NA', gdp: 180 },
-  { id: 'houston', name: 'Houston', type: 'resource', lon: -95.3, lat: 29.7, region: 'NA', gdp: 120, resource: 'oil' },
-  { id: 'toronto', name: 'Toronto', type: 'economic', lon: -79.3, lat: 43.6, region: 'NA', gdp: 90 },
+  { id: 'nyc', name: '🇺🇸 New York', type: 'economic', lon: -74.0, lat: 40.7, region: 'NA', gdp: 250 },
+  { id: 'la', name: '🇺🇸 Los Angeles', type: 'economic', lon: -118.2, lat: 34.0, region: 'NA', gdp: 180 },
+  { id: 'houston', name: '🇺🇸 Houston', type: 'resource', lon: -95.3, lat: 29.7, region: 'NA', gdp: 120, resource: 'oil' },
+  { id: 'toronto', name: '🇨🇦 Toronto', type: 'economic', lon: -79.3, lat: 43.6, region: 'NA', gdp: 90 },
 
   // Europe
-  { id: 'london', name: 'London', type: 'economic', lon: -0.1, lat: 51.5, region: 'EU', gdp: 220 },
-  { id: 'frankfurt', name: 'Frankfurt', type: 'economic', lon: 8.6, lat: 50.1, region: 'EU', gdp: 180 },
-  { id: 'paris', name: 'Paris', type: 'economic', lon: 2.3, lat: 48.8, region: 'EU', gdp: 200 },
-  { id: 'rotterdam', name: 'Rotterdam', type: 'economic', lon: 4.4, lat: 51.9, region: 'EU', gdp: 70, isPort: true },
+  { id: 'london', name: '🇬🇧 London', type: 'economic', lon: -0.1, lat: 51.5, region: 'EU', gdp: 220 },
+  { id: 'frankfurt', name: '🇩🇪 Frankfurt', type: 'economic', lon: 8.6, lat: 50.1, region: 'EU', gdp: 180 },
+  { id: 'paris', name: '🇫🇷 Paris', type: 'economic', lon: 2.3, lat: 48.8, region: 'EU', gdp: 200 },
+  { id: 'rotterdam', name: '🇳🇱 Rotterdam', type: 'economic', lon: 4.4, lat: 51.9, region: 'EU', gdp: 70, isPort: true },
 
   // Middle East
-  { id: 'dubai', name: 'Dubai/Gulf', type: 'resource', lon: 55.2, lat: 25.2, region: 'ME', gdp: 150, resource: 'oil', isChokepoint: false },
-  { id: 'hormuz', name: 'Strait of Hormuz', type: 'chokepoint', lon: 56.4, lat: 26.5, region: 'ME', gdp: 0, isChokepoint: true },
-  { id: 'riyadh', name: 'Riyadh', type: 'resource', lon: 46.6, lat: 24.7, region: 'ME', gdp: 100, resource: 'oil' },
+  { id: 'dubai', name: '🇦🇪 Dubai/Gulf', type: 'resource', lon: 55.2, lat: 25.2, region: 'ME', gdp: 150, resource: 'oil', isChokepoint: false },
+  { id: 'hormuz', name: '🇴🇲 Strait of Hormuz', type: 'chokepoint', lon: 56.4, lat: 26.5, region: 'ME', gdp: 0, isChokepoint: true },
+  { id: 'riyadh', name: '🇸🇦 Riyadh', type: 'resource', lon: 46.6, lat: 24.7, region: 'ME', gdp: 100, resource: 'oil' },
 
   // Africa / Suez
-  { id: 'suez', name: 'Suez Canal', type: 'chokepoint', lon: 32.5, lat: 29.9, region: 'AF', gdp: 0, isChokepoint: true },
-  { id: 'cairo', name: 'Cairo', type: 'economic', lon: 31.2, lat: 30.0, region: 'AF', gdp: 60 },
-  { id: 'lagos', name: 'Lagos', type: 'resource', lon: 3.3, lat: 6.5, region: 'AF', gdp: 55, resource: 'minerals' },
-  { id: 'capetown', name: 'Cape Town', type: 'economic', lon: 18.4, lat: -33.9, region: 'AF', gdp: 40 },
-  { id: 'congo', name: 'Congo Basin', type: 'resource', lon: 15.3, lat: -4.3, region: 'AF', gdp: 20, resource: 'minerals' },
+  { id: 'suez', name: '🇪🇬 Suez Canal', type: 'chokepoint', lon: 32.5, lat: 29.9, region: 'AF', gdp: 0, isChokepoint: true },
+  { id: 'cairo', name: '🇪🇬 Cairo', type: 'economic', lon: 31.2, lat: 30.0, region: 'AF', gdp: 60 },
+  { id: 'lagos', name: '🇳🇬 Lagos', type: 'resource', lon: 3.3, lat: 6.5, region: 'AF', gdp: 55, resource: 'minerals' },
+  { id: 'capetown', name: '🇿🇦 Cape Town', type: 'economic', lon: 18.4, lat: -33.9, region: 'AF', gdp: 40 },
+  { id: 'congo', name: '🇨🇩 Congo Basin', type: 'resource', lon: 15.3, lat: -4.3, region: 'AF', gdp: 20, resource: 'minerals' },
 
   // Asia
-  { id: 'mumbai', name: 'Mumbai', type: 'economic', lon: 72.8, lat: 19.0, region: 'AS', gdp: 140 },
-  { id: 'singapore', name: 'Singapore', type: 'economic', lon: 103.8, lat: 1.3, region: 'AS', gdp: 100, isPort: true },
-  { id: 'malacca', name: 'Malacca Strait', type: 'chokepoint', lon: 102.2, lat: 2.2, region: 'AS', gdp: 0, isChokepoint: true },
-  { id: 'shanghai', name: 'Shanghai', type: 'economic', lon: 121.4, lat: 31.2, region: 'AS', gdp: 280 },
-  { id: 'tokyo', name: 'Tokyo', type: 'economic', lon: 139.6, lat: 35.6, region: 'AS', gdp: 250 },
-  { id: 'seoul', name: 'Seoul', type: 'economic', lon: 126.9, lat: 37.5, region: 'AS', gdp: 140 },
-  { id: 'beijing', name: 'Beijing', type: 'economic', lon: 116.4, lat: 39.9, region: 'AS', gdp: 220 },
-  { id: 'siberia', name: 'Siberia Mines', type: 'resource', lon: 88.2, lat: 69.3, region: 'AS', gdp: 30, resource: 'minerals' },
+  { id: 'mumbai', name: '🇮🇳 Mumbai', type: 'economic', lon: 72.8, lat: 19.0, region: 'AS', gdp: 140 },
+  { id: 'singapore', name: '🇸🇬 Singapore', type: 'economic', lon: 103.8, lat: 1.3, region: 'AS', gdp: 100, isPort: true },
+  { id: 'malacca', name: '🇲🇾 Malacca Strait', type: 'chokepoint', lon: 102.2, lat: 2.2, region: 'AS', gdp: 0, isChokepoint: true },
+  { id: 'shanghai', name: '🇨🇳 Shanghai', type: 'economic', lon: 121.4, lat: 31.2, region: 'AS', gdp: 280 },
+  { id: 'tokyo', name: '🇯🇵 Tokyo', type: 'economic', lon: 139.6, lat: 35.6, region: 'AS', gdp: 250 },
+  { id: 'seoul', name: '🇰🇷 Seoul', type: 'economic', lon: 126.9, lat: 37.5, region: 'AS', gdp: 140 },
+  { id: 'beijing', name: '🇨🇳 Beijing', type: 'economic', lon: 116.4, lat: 39.9, region: 'AS', gdp: 220 },
+  { id: 'siberia', name: '🇷🇺 Siberia Mines', type: 'resource', lon: 88.2, lat: 69.3, region: 'AS', gdp: 30, resource: 'minerals' },
 
   // Latin America
-  { id: 'saopaulo', name: 'São Paulo', type: 'economic', lon: -46.6, lat: -23.5, region: 'LA', gdp: 90 },
-  { id: 'buenos', name: 'Buenos Aires', type: 'economic', lon: -58.3, lat: -34.6, region: 'LA', gdp: 60 },
-  { id: 'bogota', name: 'Bogotá', type: 'resource', lon: -74.0, lat: 4.7, region: 'LA', gdp: 40, resource: 'minerals' },
+  { id: 'saopaulo', name: '🇧🇷 São Paulo', type: 'economic', lon: -46.6, lat: -23.5, region: 'LA', gdp: 90 },
+  { id: 'buenos', name: '🇦🇷 Buenos Aires', type: 'economic', lon: -58.3, lat: -34.6, region: 'LA', gdp: 60 },
+  { id: 'bogota', name: '🇨🇴 Bogotá', type: 'resource', lon: -74.0, lat: 4.7, region: 'LA', gdp: 40, resource: 'minerals' },
 
   // Russia
-  { id: 'moscow', name: 'Moscow', type: 'economic', lon: 37.6, lat: 55.7, region: 'RU', gdp: 130 },
-  { id: 'urals', name: 'Ural Fields', type: 'resource', lon: 65.5, lat: 57.1, region: 'RU', gdp: 50, resource: 'oil' },
+  { id: 'moscow', name: '🇷🇺 Moscow', type: 'economic', lon: 37.6, lat: 55.7, region: 'RU', gdp: 130 },
+  { id: 'urals', name: '🇷🇺 Ural Fields', type: 'resource', lon: 65.5, lat: 57.1, region: 'RU', gdp: 50, resource: 'oil' },
 
   // Australia
-  { id: 'sydney', name: 'Sydney', type: 'economic', lon: 151.2, lat: -33.8, region: 'OC', gdp: 80 },
-  { id: 'perth', name: 'W. Australia Mines', type: 'resource', lon: 115.8, lat: -31.9, region: 'OC', gdp: 30, resource: 'minerals' },
+  { id: 'sydney', name: '🇦🇺 Sydney', type: 'economic', lon: 151.2, lat: -33.8, region: 'OC', gdp: 80 },
+  { id: 'perth', name: '🇦🇺 W. Australia Mines', type: 'resource', lon: 115.8, lat: -31.9, region: 'OC', gdp: 30, resource: 'minerals' },
 ];
 
 // Trade routes: pairs of node IDs
