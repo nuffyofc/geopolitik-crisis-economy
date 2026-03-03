@@ -10,6 +10,23 @@
 - **Dynamic Market Simulation**: Live commodity prices (Oil, Gold, Lithium, etc.) that react to global events and player decisions.
 - **Crisis Dashboard**: A premium military/cyber-themed interface featuring dedicated scenario cards, consequence explainers, and real-time strategic monitoring.
 
+## Preview
+
+![Welcome Screen](screenshots/welcome_screen.png)
+*Establish your strategic command*
+
+![Choose Faction](screenshots/choose_faction.png)
+*Select your global power*
+
+![Lead the Globe](screenshots/lead_the_globe.png)
+*The Crisis Dashboard in action*
+
+![Make Decisions](screenshots/make_decisions.png)
+*High-stakes geopolitical scenarios*
+
+![Accept Consequences](screenshots/accept_consequences.png)
+*Real-world logic and consequences*
+
 ## Tech Stack
 
 - **Build Tool**: [Vite](https://vitejs.dev/)
