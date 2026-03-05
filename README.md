@@ -9,6 +9,7 @@
 - **Scenario-Driven Gameplay**: Every turn presents a high-stakes scenario based on actual geopolitical events (OPEC cuts, Red Sea attacks, SWIFT sanctions, etc.).
 - **Global Consequence Logic**: Each choice explains the "Real-World Logic" behind geopolitical and economic mechanics.
 - **GPS-Accurate World Map**: Interactive world map with real latitude/longitude for all major global hubs, rendered using a precise `d3-geo` projection.
+- **Tactical Visuals**: High-fidelity map labels featuring **Country Flags** and **Dynamic Zoom/Pan** capabilities for precise strategic monitoring.
 - **Dynamic Market Simulation**: Live commodity prices (Oil, Gold, Lithium, etc.) that react to global events and player decisions.
 - **Crisis Dashboard**: A premium military/cyber-themed interface featuring dedicated scenario cards, consequence explainers, and real-time strategic monitoring.
 
