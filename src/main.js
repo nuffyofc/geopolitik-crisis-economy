@@ -54,16 +54,25 @@ function startGame() {
   worldMap.startLoop();
 
   // Map layer buttons
-  document.querySelectorAll('.map-btn').forEach(btn => {
+  document.querySelectorAll('.map-btn[data-layer]').forEach(btn => {
     btn.addEventListener('click', () => {
-      document.querySelectorAll('.map-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.map-btn[data-layer]').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       gameState.activeLayer = btn.dataset.layer;
     });
   });
 
-  // Consequence continue button
+  // Zoom reset button
+  const btnZoomReset = document.getElementById('btn-zoom-reset');
+  if (btnZoomReset) {
+    btnZoomReset.addEventListener('click', () => worldMap.resetZoom());
+  }
+  // Double-click on map also resets zoom
+  document.getElementById('world-map').addEventListener('dblclick', () => worldMap.resetZoom());
+
+  // Consequence continue & close buttons
   document.getElementById('btn-continue').addEventListener('click', onContinueAfterConsequence);
+  document.getElementById('consequence-close-btn').addEventListener('click', onContinueAfterConsequence);
   document.getElementById('btn-restart').addEventListener('click', () => location.reload());
 
   // Initial render
@@ -146,6 +155,7 @@ function renderScenarioCard(sc) {
       <span class="scenario-cat-icon">${sc.icon}</span>
       <span class="scenario-category">${sc.category} ALERT</span>
       <span class="scenario-turn-badge">TURN ${Math.ceil(scenarioCount / 3)}</span>
+      <button class="scenario-close-btn" id="scenario-close-btn" title="Dismiss Scenario">✖</button>
     </div>
     <div class="scenario-title">${sc.title}</div>
     <div class="scenario-situation">${sc.situation}</div>
@@ -169,6 +179,9 @@ function renderScenarioCard(sc) {
     toggle.classList.toggle('open');
     ctx.classList.toggle('open');
   });
+
+  // Dismiss button
+  document.getElementById('scenario-close-btn').addEventListener('click', () => dismissScenario(sc));
 
   // Build choice cards
   const choicesEl = document.getElementById('scenario-choices');
@@ -218,6 +231,26 @@ function buildEffectTags(effects) {
 }
 
 // ── CHOICE EXECUTION ───────────────────────────────────────────
+function dismissScenario(scenario) {
+  const container = document.getElementById('scenario-card-container');
+  const card = document.getElementById('active-scenario-card');
+  if (card) card.remove();
+
+  // Restore placeholder with Re-open button
+  container.innerHTML = `
+    <div class="scenario-placeholder" id="scenario-placeholder">
+      <div class="scenario-placeholder-icon">📋</div>
+      <div class="scenario-placeholder-text">REPORT ON HOLD:<br>${scenario.title}</div>
+      <button class="ph-btn ph-reopen" id="ph-reopen-btn">RESTORE REPORT</button>
+    </div>
+  `;
+
+  document.getElementById('ph-reopen-btn').addEventListener('click', () => renderScenarioCard(scenario));
+
+  addNews(`Postponed: ${scenario.title}`, 'low', '⏸️');
+  setStatus(`Awaiting decision: ${scenario.title}. Click placeholder card to resume.`);
+}
+
 function executeChoice(scenario, choice) {
   // Spend capital
   if (choice.cost > 0) {
@@ -295,7 +328,7 @@ function showConsequence(scenario, choice) {
   const overlay = document.getElementById('consequence-overlay');
   overlay.classList.remove('hidden');
 
-  document.getElementById('consequence-header').textContent = '⚡ OPERATION COMPLETE';
+  document.getElementById('consequence-header-text').textContent = '⚡ OPERATION COMPLETE';
   document.getElementById('consequence-scenario-title').textContent = scenario.title;
   document.getElementById('consequence-choice-made').textContent = '▶ ' + choice.label;
 
@@ -347,8 +380,19 @@ function onContinueAfterConsequence() {
   });
 
   renderResources();
-  setStatus('Situation resolved. Analyzing next intelligence report...');
-  setTimeout(() => presentScenario(), 800);
+
+  // Show manual "Proceed" placeholder instead of auto-loading
+  const container = document.getElementById('scenario-card-container');
+  container.innerHTML = `
+    <div class="scenario-placeholder" id="scenario-placeholder">
+      <div class="scenario-placeholder-icon">📡</div>
+      <div class="scenario-placeholder-text">Situation resolved. Awaiting next intelligence report...</div>
+      <button class="ph-btn ph-proceed" id="ph-proceed-btn">INITIATE NEXT SCAN</button>
+    </div>
+  `;
+
+  document.getElementById('ph-proceed-btn').addEventListener('click', () => presentScenario());
+  setStatus('Commander, the crisis has been managed. Initiate next scan when ready.');
 }
 
 // ── NODE CLICK ─────────────────────────────────────────────────
@@ -356,7 +400,16 @@ function onNodeClick(node) {
   const routes = gameState.routes.filter(r => r.from === node.id || r.to === node.id);
   const blocked = routes.filter(r => r.status !== 'active').length;
   const income = routes.reduce((s, r) => s + Math.floor(r.value * r.efficiency * 0.35), 0);
-  setStatus(`📍 ${node.name} — ${routes.length} routes | ${blocked} blocked | ~$${income}/turn`);
+
+  const flag = getFlagEmoji(node.isoCode);
+  setStatus(`📍 ${flag} ${node.name.toUpperCase()} — ${routes.length} routes | ${blocked} blocked | ~$${income}/turn`);
+}
+
+function getFlagEmoji(isoCode) {
+  if (!isoCode) return '🌐';
+  return isoCode.toUpperCase().replace(/./g, char =>
+    String.fromCodePoint(char.charCodeAt(0) + 127397)
+  );
 }
 
 // ── UI RENDER FUNCTIONS ────────────────────────────────────────

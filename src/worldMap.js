@@ -4,6 +4,8 @@
 
 import { geoNaturalEarth1, geoPath } from 'd3-geo';
 import { feature, mesh } from 'topojson-client';
+import { zoom, zoomIdentity } from 'https://cdn.skypack.dev/d3-zoom@3';
+import { select } from 'https://cdn.skypack.dev/d3-selection@3';
 import worldData from 'world-atlas/countries-110m.json';
 
 export class WorldMap {
@@ -20,11 +22,22 @@ export class WorldMap {
         this.countries = feature(worldData, worldData.objects.countries);
         this.borders = mesh(worldData, worldData.objects.countries, (a, b) => a !== b);
 
+        this.transform = zoomIdentity;
+
         this._resize();
         window.addEventListener('resize', () => this._resize());
         this.canvas.addEventListener('mousemove', e => this._onMouseMove(e));
         this.canvas.addEventListener('click', e => this._onClick(e));
         this.canvas.addEventListener('mouseleave', () => { this.hoveredNode = null; this._hideTooltip(); });
+
+        // Initialize D3 zoom
+        this.zoom = zoom()
+            .scaleExtent([0.8, 5])
+            .on('zoom', (e) => {
+                this.transform = e.transform;
+            });
+
+        select(this.canvas).call(this.zoom);
     }
 
     _resize() {
@@ -42,7 +55,9 @@ export class WorldMap {
     }
 
     _worldToCanvas(lon, lat) {
-        return this.projection([lon, lat]);
+        const p = this.projection([lon, lat]);
+        if (!p) return null;
+        return this.transform.apply(p);
     }
 
     _canvasToWorld(cx, cy) {
@@ -53,11 +68,15 @@ export class WorldMap {
     }
 
     _findNodeAt(cx, cy) {
+        // Inverse transform the mouse coordinates to handle zoom/pan
+        const [invX, invY] = this.transform.invert([cx, cy]);
+
         return this.state.nodes.find(n => {
-            const pos = this._worldToCanvas(n.lon, n.lat);
+            const pos = this.projection([n.lon, n.lat]);
             if (!pos) return false;
-            const dx = pos[0] - cx, dy = pos[1] - cy;
-            return Math.sqrt(dx * dx + dy * dy) < 14;
+            const dx = pos[0] - invX, dy = pos[1] - invY;
+            // Scale hit radius to be generous even when zoomed out
+            return Math.sqrt(dx * dx + dy * dy) < (14 / this.transform.k);
         });
     }
 
@@ -91,16 +110,34 @@ export class WorldMap {
         const relatedRoutes = this.state.routes.filter(r => r.from === node.id || r.to === node.id);
         const blocked = relatedRoutes.filter(r => r.status !== 'active').length;
         const income = relatedRoutes.reduce((s, r) => s + Math.floor(r.value * r.efficiency * 0.35), 0);
-        let html = `<strong>${node.name}</strong><br>`;
-        if (node.type === 'chokepoint') html += `<span style="color:#ff2244">⚠ STRATEGIC CHOKEPOINT</span><br>`;
-        else if (node.type === 'resource') html += `Resource: ${(node.resource || '').toUpperCase()}<br>`;
-        else html += `GDP Index: $${node.gdp}B<br>`;
-        html += `Routes: ${relatedRoutes.length} &nbsp;|&nbsp; Blocked: ${blocked}<br>`;
-        html += `Est. income: <strong>$${income}/turn</strong>`;
+
+        const flag = this._getFlagEmoji(node.isoCode);
+
+        let html = `<div style="display:flex; align-items:center; gap:8px; margin-bottom:5px;">
+                      <span style="font-size:24px;">${flag}</span>
+                      <strong style="font-size:16px; letter-spacing:1px;">${node.name.toUpperCase()}</strong>
+                    </div>`;
+
+        if (node.type === 'chokepoint') html += `<span style="color:#ff2244; font-weight:bold;">⚠ STRATEGIC CHOKEPOINT</span><br>`;
+        else if (node.type === 'resource') html += `<span style="color:var(--cyan)">RESOURCE:</span> ${(node.resource || '').toUpperCase()}<br>`;
+        else html += `<span style="color:var(--cyan)">GDP INDEX:</span> $${node.gdp}B<br>`;
+
+        html += `<span style="color:var(--cyan)">ROUTES:</span> ${relatedRoutes.length} &nbsp;|&nbsp; <span style="color:#ff2244">BLOCKED:</span> ${blocked}<br>`;
+        html += `<div style="margin-top:8px; border-top:1px solid rgba(0,212,255,0.2); padding-top:8px;">
+                   EST. INCOME: <strong style="color:var(--green)">$${income}/TURN</strong>
+                 </div>`;
+
         tooltip.innerHTML = html;
         tooltip.classList.add('visible');
         tooltip.style.left = `${Math.min(cx + 14, this.W - 220)}px`;
-        tooltip.style.top = `${Math.min(cy - 10, this.H - 110)}px`;
+        tooltip.style.top = `${Math.min(cy - 10, this.H - 120)}px`;
+    }
+
+    _getFlagEmoji(isoCode) {
+        if (!isoCode) return '🌐';
+        return isoCode.toUpperCase().replace(/./g, char =>
+            String.fromCodePoint(char.charCodeAt(0) + 127397)
+        );
     }
 
     _hideTooltip() {
@@ -114,12 +151,21 @@ export class WorldMap {
 
         ctx.clearRect(0, 0, W, H);
 
+        // Map drawing
+        ctx.save();
+        ctx.translate(this.transform.x, this.transform.y);
+        ctx.scale(this.transform.k, this.transform.k);
+
         // Ocean background
         const oceanGrad = ctx.createRadialGradient(W / 2, H / 2, 0, W / 2, H / 2, Math.max(W, H) * 0.8);
         oceanGrad.addColorStop(0, '#04182e');
         oceanGrad.addColorStop(1, '#010a18');
         ctx.fillStyle = oceanGrad;
-        ctx.fillRect(0, 0, W, H);
+
+        // Draw ocean relative to projection bounding box to avoid hard edges when panning
+        ctx.beginPath();
+        this.path({ type: 'Sphere' });
+        ctx.fill();
 
         // Draw sphere outline
         ctx.save();
@@ -162,6 +208,7 @@ export class WorldMap {
 
         this._drawNodes(ctx);
         this._drawActiveEventIcons(ctx);
+        ctx.restore(); // Restore from zoom/pan transform
 
         // Vignette overlay
         const vig = ctx.createRadialGradient(W / 2, H / 2, H * 0.3, W / 2, H / 2, H);
@@ -195,8 +242,8 @@ export class WorldMap {
             const toNode = this.state.getNode(r.to);
             if (!fromNode || !toNode) return;
 
-            const fp = this._worldToCanvas(fromNode.lon, fromNode.lat);
-            const tp = this._worldToCanvas(toNode.lon, toNode.lat);
+            const fp = this.projection([fromNode.lon, fromNode.lat]);
+            const tp = this.projection([toNode.lon, toNode.lat]);
             if (!fp || !tp) return;
             const [fx, fy] = fp;
             const [tx, ty] = tp;
@@ -258,10 +305,13 @@ export class WorldMap {
     _drawFogOfWar(ctx, W, H) {
         ctx.save();
         ctx.fillStyle = 'rgba(0,0,0,0.72)';
-        ctx.fillRect(0, 0, W, H);
+        // Draw fog covering the whole visible projection area
+        ctx.beginPath();
+        this.path({ type: 'Sphere' });
+        ctx.fill();
         this.state.nodes.forEach(n => {
             if (!n.fogRevealed) return;
-            const pos = this._worldToCanvas(n.lon, n.lat);
+            const pos = this.projection([n.lon, n.lat]);
             if (!pos) return;
             const [cx, cy] = pos;
             const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, 70);
@@ -278,8 +328,11 @@ export class WorldMap {
     }
 
     _drawNodes(ctx) {
+        // Adjust node sizes based on zoom to prevent massive nodes
+        const i_k = 1 / Math.sqrt(this.transform.k);
+
         this.state.nodes.forEach(n => {
-            const pos = this._worldToCanvas(n.lon, n.lat);
+            const pos = this.projection([n.lon, n.lat]);
             if (!pos) return;
             const [cx, cy] = pos;
             const isHovered = this.hoveredNode === n;
@@ -289,15 +342,15 @@ export class WorldMap {
 
             let color, glowColor, radius;
             if (n.type === 'chokepoint') {
-                color = '#ff2244'; glowColor = `rgba(255,34,68,${0.7 * pulse})`; radius = 8;
+                color = '#ff2244'; glowColor = `rgba(255,34,68,${0.7 * pulse})`; radius = 8 * i_k;
             } else if (n.type === 'resource') {
                 color = n.resource === 'oil' ? '#ff6600' : '#88ccff';
                 glowColor = n.resource === 'oil' ? `rgba(255,102,0,${0.55 * pulse})` : `rgba(136,200,255,${0.45 * pulse})`;
-                radius = 6.5;
+                radius = 6.5 * i_k;
             } else {
                 color = isDisrupted ? '#ff6600' : '#00d4ff';
                 glowColor = isDisrupted ? `rgba(255,102,0,${0.4 * pulse})` : `rgba(0,212,255,${0.35 * pulse})`;
-                radius = 5.5;
+                radius = 5.5 * i_k;
             }
             if (isHovered || isSelected) radius *= 1.5;
 
@@ -316,7 +369,7 @@ export class WorldMap {
             ctx.fillStyle = isDisrupted ? '#ff6600' : color;
             ctx.fill();
             ctx.strokeStyle = isSelected ? '#ffd700' : (isHovered ? '#ffffff' : 'rgba(255,255,255,0.5)');
-            ctx.lineWidth = isSelected ? 2.5 : 1.2;
+            ctx.lineWidth = (isSelected ? 2.5 : 1.2) * i_k;
             ctx.stroke();
 
             // Chokepoint warning
@@ -330,14 +383,24 @@ export class WorldMap {
             }
 
             // Labels
-            if (isHovered || isSelected || (n.type === 'economic' && n.gdp > 140)) {
+            if (isHovered || isSelected || (n.type === 'economic' && n.gdp > 140) || this.transform.k > 2) {
                 ctx.save();
-                ctx.font = `${isHovered ? 'bold ' : ''}10px "Share Tech Mono", monospace`;
-                ctx.fillStyle = isSelected ? '#ffd700' : '#d0eeff';
+                const fontSize = Math.max(6, 10 * i_k);
+                const flag = this._getFlagEmoji(n.isoCode);
+
                 ctx.textAlign = 'center';
                 ctx.shadowColor = 'rgba(0,0,0,0.95)';
                 ctx.shadowBlur = 5;
-                ctx.fillText(n.name, cx, cy + radius + 13);
+
+                // Draw Flag (using system font for better emoji support)
+                ctx.font = `${fontSize * 1.2}px "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif`;
+                ctx.fillText(flag, cx, cy + radius + (13 * i_k));
+
+                // Draw Name
+                ctx.font = `${isHovered ? 'bold ' : ''}${fontSize}px "Share Tech Mono", monospace`;
+                ctx.fillStyle = isSelected ? '#ffd700' : '#d0eeff';
+                ctx.fillText(n.name.toUpperCase(), cx, cy + radius + (24 * i_k));
+
                 ctx.restore();
             }
         });
@@ -351,8 +414,8 @@ export class WorldMap {
                 const fn = this.state.getNode(r.from);
                 const tn = this.state.getNode(r.to);
                 if (!fn || !tn) return;
-                const fp = this._worldToCanvas(fn.lon, fn.lat);
-                const tp = this._worldToCanvas(tn.lon, tn.lat);
+                const fp = this.projection([fn.lon, fn.lat]);
+                const tp = this.projection([tn.lon, tn.lat]);
                 if (!fp || !tp) return;
                 const cx = (fp[0] + tp[0]) / 2;
                 const cy = (fp[1] + tp[1]) / 2;
@@ -365,6 +428,13 @@ export class WorldMap {
                 }
             });
         });
+    }
+
+    resetZoom() {
+        select(this.canvas)
+            .transition()
+            .duration(450)
+            .call(this.zoom.transform, zoomIdentity);
     }
 
     startLoop() {

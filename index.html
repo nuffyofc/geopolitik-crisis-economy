@@ -107,9 +107,12 @@
             <button class="map-btn active" data-layer="trade">TRADE</button>
             <button class="map-btn" data-layer="threats">THREATS</button>
             <button class="map-btn" data-layer="fog">FOG</button>
+            <button class="map-btn" id="btn-zoom-reset" title="Reset zoom (double-click map)">⊙ RESET</button>
           </div>
+          <div class="map-zoom-hint">SCROLL TO ZOOM · DRAG TO PAN</div>
           <div class="map-tooltip" id="map-tooltip"></div>
         </main>
+
 
         <!-- RIGHT PANEL: SCENARIO CARD -->
         <aside class="panel panel-right scenario-panel" id="panel-right">
@@ -149,7 +152,10 @@
       ═══════════════════════════════════════════ -->
     <div class="consequence-overlay hidden" id="consequence-overlay">
       <div class="consequence-panel" id="consequence-panel">
-        <div class="consequence-header" id="consequence-header">OPERATION COMPLETE</div>
+        <div class="consequence-header">
+          <span id="consequence-header-text">OPERATION COMPLETE</span>
+          <button class="scenario-close-btn" id="consequence-close-btn" title="Dismiss">✖</button>
+        </div>
         <div class="consequence-scenario-title" id="consequence-scenario-title"></div>
         <div class="consequence-choice-made" id="consequence-choice-made"></div>
 
