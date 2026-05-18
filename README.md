@@ -1,6 +1,6 @@
 # Geopolitik: The Crisis Economy
 
-**Free to play at: [geopolitik-crisis-economy.vercel.app]([https://geopolitik-crisis-economy.vercel.app/](https://dist-sepia-omega-91.vercel.app/))**
+**Free to play at: https://dist-sepia-omega-91.vercel.app/
 
 **Geopolitik: The Crisis Economy** is a strategic economic and geopolitical simulator where players act as shadow megacorporations or superpowers. The goal is to build a resilient global supply chain that thrives on the instability of other nations, achieving global market dominance without triggering global annihilation or suffering complete economic collapse.
 
