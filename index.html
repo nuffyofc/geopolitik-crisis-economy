@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GEOPOLITIK: The Crisis Economy</title>
+  <meta name="description"
+    content="A grand strategy game where you manage global supply chains, exploit crises, and achieve market dominance. Real geopolitical logic. Real consequences." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;900&family=Share+Tech+Mono&family=Exo+2:wght@300;400;500;600&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+
+<body>
+  <div id="app">
+
+    <!-- ═══════════════════════════════════════════
+           INTRO SCREEN
+      ═══════════════════════════════════════════ -->
+    <div id="intro-screen" class="screen active">
+      <div class="intro-bg"></div>
+      <div class="intro-scanlines"></div>
+      <div class="intro-content">
+        <div class="intro-logo">
+          <div class="logo-subtitle">CLASSIFIED — EYES ONLY</div>
+          <h1 class="logo-title">GEOPOLITIK</h1>
+          <div class="logo-tagline">THE CRISIS ECONOMY</div>
+          <div class="logo-version">STRATEGIC COMMAND v3.1 // REAL-WORLD SCENARIO ENGINE</div>
+        </div>
+        <div class="intro-description">
+          <p>Every crisis is someone's opportunity.<br>
+            Master real geopolitical logic. Make decisions that shape empires.</p>
+        </div>
+        <div class="faction-select">
+          <div class="faction-select-title">SELECT YOUR FACTION</div>
+          <div class="faction-grid" id="faction-grid"></div>
+        </div>
+        <button class="btn-start" id="btn-start" disabled>
+          <span class="btn-glow"></span>
+          INITIATE STRATEGIC COMMAND
+        </button>
+        <div class="intro-warning">⚠ ALL SCENARIOS BASED ON REAL-WORLD GEOPOLITICAL EVENTS</div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════
+           MAIN GAME SCREEN
+      ═══════════════════════════════════════════ -->
+    <div id="game-screen" class="screen">
+
+      <!-- TOP BAR -->
+      <header class="top-bar">
+        <div class="top-bar-left">
+          <div class="game-logo-small">GEOPOLITIK</div>
+          <div class="faction-badge" id="player-faction-badge"></div>
+        </div>
+        <div class="top-bar-center">
+          <div class="resource-bar" id="resource-bar"></div>
+        </div>
+        <div class="top-bar-right">
+          <div class="turn-display">
+            <span class="turn-label">TURN</span>
+            <span class="turn-num" id="turn-num">1</span>
+            <span class="scenario-count-badge" id="scenario-count-badge">SCENARIO 1</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- MAIN LAYOUT: left panel | map | right scenario panel -->
+      <div class="game-layout">
+
+        <!-- LEFT PANEL -->
+        <aside class="panel panel-left">
+
+          <div class="widget defcon-widget">
+            <div class="widget-header">DEFCON STATUS</div>
+            <div class="defcon-display">
+              <div class="defcon-level" id="defcon-level">5</div>
+              <div class="defcon-bar">
+                <div class="defcon-segments" id="defcon-segments"></div>
+              </div>
+              <div class="defcon-label" id="defcon-label">PEACETIME</div>
+            </div>
+          </div>
+
+          <div class="widget market-widget">
+            <div class="widget-header">GLOBAL MARKETS <span class="live-dot blink">●</span></div>
+            <div class="market-container" id="market-container"></div>
+          </div>
+
+          <div class="widget advisor-widget">
+            <div class="widget-header">🤖 AI STRATEGIC ADVISOR</div>
+            <div class="advisor-message" id="advisor-message">Awaiting intel...</div>
+            <div class="advisor-probability" id="advisor-probability"></div>
+          </div>
+
+        </aside>
+
+        <!-- CENTER MAP -->
+        <main class="map-container" id="map-container">
+          <canvas id="world-map"></canvas>
+          <div class="map-controls">
+            <button class="map-btn active" data-layer="trade">TRADE</button>
+            <button class="map-btn" data-layer="threats">THREATS</button>
+            <button class="map-btn" data-layer="fog">FOG</button>
+          </div>
+          <div class="map-tooltip" id="map-tooltip"></div>
+        </main>
+
+        <!-- RIGHT PANEL: SCENARIO CARD -->
+        <aside class="panel panel-right scenario-panel" id="panel-right">
+
+          <!-- NEWS STRIP (top) -->
+          <div class="widget news-mini-widget">
+            <div class="widget-header">📡 INTEL FEED <span class="live-dot blink">●</span></div>
+            <div class="news-feed-mini" id="news-feed"></div>
+          </div>
+
+          <!-- SCENARIO CARD (main action area) -->
+          <div class="scenario-card-container" id="scenario-card-container">
+            <div class="scenario-placeholder" id="scenario-placeholder">
+              <div class="scenario-placeholder-icon">📡</div>
+              <div class="scenario-placeholder-text">Awaiting intelligence from field operatives...</div>
+            </div>
+          </div>
+
+        </aside>
+      </div>
+
+      <!-- STATUS BAR -->
+      <footer class="status-bar">
+        <div class="status-left" id="status-message">Commander, your empire awaits orders.</div>
+        <div class="status-right">
+          <span class="status-dominance">DOMINANCE:</span>
+          <span id="dominance-pct" style="color:var(--cyan);font-weight:700">0</span>%
+          <div class="dominance-bar">
+            <div class="dominance-fill" id="dominance-fill"></div>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <!-- ═══════════════════════════════════════════
+           CONSEQUENCE OVERLAY (after choice)
+      ═══════════════════════════════════════════ -->
+    <div class="consequence-overlay hidden" id="consequence-overlay">
+      <div class="consequence-panel" id="consequence-panel">
+        <div class="consequence-header" id="consequence-header">OPERATION COMPLETE</div>
+        <div class="consequence-scenario-title" id="consequence-scenario-title"></div>
+        <div class="consequence-choice-made" id="consequence-choice-made"></div>
+
+        <div class="consequence-section">
+          <div class="consequence-section-label">REAL-WORLD LOGIC</div>
+          <div class="consequence-logic" id="consequence-logic"></div>
+        </div>
+
+        <div class="consequence-section">
+          <div class="consequence-section-label">OUTCOME</div>
+          <div class="consequence-outcome" id="consequence-outcome"></div>
+        </div>
+
+        <div class="consequence-effects" id="consequence-effects"></div>
+        <div class="consequence-market" id="consequence-market"></div>
+
+        <button class="btn-continue" id="btn-continue">NEXT SCENARIO ▶</button>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════
+           GAME OVER OVERLAY
+      ═══════════════════════════════════════════ -->
+    <div class="gameover-overlay hidden" id="gameover-overlay">
+      <div class="gameover-panel" id="gameover-panel">
+        <div class="gameover-icon" id="gameover-icon">💀</div>
+        <div class="gameover-title" id="gameover-title">OPERATION TERMINATED</div>
+        <div class="gameover-reason" id="gameover-reason"></div>
+        <div class="gameover-stats" id="gameover-stats"></div>
+        <button class="btn-restart" id="btn-restart">RESTART OPERATION</button>
+      </div>
+    </div>
+
+  </div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+
+</html>
